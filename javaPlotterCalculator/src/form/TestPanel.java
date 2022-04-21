@@ -25,7 +25,8 @@ public class TestPanel extends JPanel {
 	private JLabel label[] = new JLabel[2];
 	ExpressionEstimator e=new ExpressionEstimator();
 	String caption[]= {"expression","variables","values"};
-	String values[]= {"Sin(pI/4)","x0+2*x1","x0 x1","1 2"};
+	//String values[]= {"Sin(pI/4)","x0+2*x1","x0 x1","1 2"};
+	String values[]= {"0xa.1","x0+2*x1","x0 x1","1 2"};
 
 	TestPanel(){
 		setLayout(new BorderLayout());

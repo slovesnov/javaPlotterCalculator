@@ -249,7 +249,8 @@ public class ExpressionEstimator {
 	}
 
 	private void getToken() throws Exception {
-		int i,j;
+		int i,j,k;
+		String s;
 
 		if (position == expression.length - 1) {
 			operator = OPERATOR.END;
@@ -259,14 +260,14 @@ public class ExpressionEstimator {
 		} else if (isLetter()) {
 			for (i = position++; isFunctionSymbol(); position++)
 				;
-			String token = new String(expression, i, position - i);
+			s = new String(expression, i, position - i);
 			
 
 			try {
-				if (token.charAt(0) == 'X' && token.length() == 1) {
+				if (s.charAt(0) == 'X' && s.length() == 1) {
 					throw new Exception("unknown keyword");
-				} else if (token.charAt(0) == 'X' && token.length() > 1 && Character.isDigit(token.charAt(1))) {
-					i = Integer.parseInt(token.substring(1));
+				} else if (s.charAt(0) == 'X' && s.length() > 1 && Character.isDigit(s.charAt(1))) {
+					i = Integer.parseInt(s.substring(1));
 					if (i < 0) {
 						throw new Exception("index of 'x' should be nonnegative integer number");
 					}
@@ -276,7 +277,7 @@ public class ExpressionEstimator {
 					operator = OPERATOR.X;
 					tokenValue = i;
 				} else {
-					operator = OPERATOR.valueOf(token);
+					operator = OPERATOR.valueOf(s);
 					i = operator.ordinal();
 					if (i < OPERATOR.SIN.ordinal() || i > OPERATOR.MAX.ordinal()) {
 						throw new IllegalArgumentException();
@@ -284,18 +285,37 @@ public class ExpressionEstimator {
 				}
 			} catch (IllegalArgumentException _ex) {
 				try {
-					tokenValue = CONSTANT_VALUE[CONSTANT_NAME.valueOf(token).ordinal()];
+					tokenValue = CONSTANT_VALUE[CONSTANT_NAME.valueOf(s).ordinal()];
 					operator = OPERATOR.NUMBER;
 				} catch (IllegalArgumentException ex) {
-					throw new Exception("unknown keyword "+token);
+					throw new Exception("unknown keyword "+s);
 				}
 			}
 		} else if (isDigit() || isPoint()) {
 			//17apr2022
 			if(expression[position]=='0' && (j="XB".indexOf(expression[position+1])) !=-1) {
-				position+=2;
-				for (i = position++; Character.isLetterOrDigit(expression[position]) ; position++);
-				tokenValue = Integer.parseInt(new String(expression, i, position - i),j==0?16:2);					
+				j=j==0?16:2;
+				position++;
+				k=-1;
+				for (i = position++; isFunctionSymbol() || isPoint(); position++) {
+					if(expression[position]=='_') {
+						throw new Exception("invalid number");
+					}
+					if(isPoint()) {
+						if(k!=-1) {
+							throw new Exception("invalid number");
+						}
+						k=position;
+					}
+				}
+				s=new String(expression, i+1, (k==-1 ? position:k-1) - i);
+				tokenValue = k != -1 && s.isEmpty() ? 0 : Integer.parseInt(s, j);
+				if(k!=-1) {
+					k++;
+					s=new String(expression, k, position - k);
+					tokenValue += s.isEmpty() ? 0 : Integer.parseInt(s,j)/Math.pow(j,s.length());					
+				}
+	
 			}
 			else {
 				for (i = position++; isDigit() || isPoint() || expression[position] == 'E'
