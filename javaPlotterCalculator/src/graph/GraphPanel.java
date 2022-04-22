@@ -91,7 +91,7 @@ public class GraphPanel extends JPanel implements ActionListener,Language {
 		up.add(resetButton);
 	
 		for (i = 0; i < 2; i++) {
-			axisLimits[i] = new MinMaxPanel(this, axisName[i]);
+			axisLimits[i] = new MinMaxPanel(this, axisName[i],null);
 			up.add(axisLimits[i]);
 		}
 		up.add(Box.createRigidArea(margin));
@@ -115,8 +115,8 @@ public class GraphPanel extends JPanel implements ActionListener,Language {
 		return backgroundColor;
 	}
 
-	boolean isError() {
-		return axisLimits[0].isError() || axisLimits[1].isError();
+	boolean ok() {
+		return axisLimits[0].ok() && axisLimits[1].ok();
 	}
 
 	public ElementaryGraphPanel getElemenentary(int i) {
@@ -150,30 +150,30 @@ public class GraphPanel extends JPanel implements ActionListener,Language {
 	}
 
 	public void zoom(boolean increaseArea) {
-		double v[] = new double[2];
+		Double v[] = new Double[2];
 		int i, j;
 		MinMaxPanel m;
-		double multiply = increaseArea ? 1 : 0.25;
+		double multiply = increaseArea ? 2 : .5;
 		for (i = 0; i < 2; i++) {
 			m = axisLimits[i];
 			for (j = 0; j < 2; j++) {
-				v[j] = (m.getMin() + m.getMax()) / 2 + (j == 0 ? -1 : +1) * multiply * (m.getMax() - m.getMin());
+				v[j] = (m.getMin() + m.getMax()) / 2 + (j == 0 ? -1 : +1) * multiply * (m.getMax() - m.getMin())/2;
 			}
 			m.setValues(v);
 		}
+		view.redrawImage();
 	}
 
 	private void reset() {
 		elementary.clear();
-		addGraph();
-		
+		addGraph();		
 		view.lastSize.width=0;
 	}
 
 	void resetAxis() {
 		double k = view.lastSize.width;
 		k /= view.lastSize.height;
-		double[] d = { -MAXY * k, MAXY * k };
+		Double[] d = { -MAXY * k, MAXY * k };
 		axisLimits[0].setValues(d);
 		axisLimits[1].setValues(-MAXY, MAXY);
 		redraw();

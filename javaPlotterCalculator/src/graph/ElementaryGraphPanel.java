@@ -35,11 +35,10 @@ public class ElementaryGraphPanel extends JPanel implements ActionListener {
 	private JTextField tf[] = new JTextField[3];
 	private GraphPanel graph;
 	private final static String startFunctionString[] = { "tan(x)","3*sin(3*a)", "3*cos(t)", "3*sin(t)" };
-	private boolean error = false;
+	private boolean ok = true;
 	private ExpressionEstimator[] estimator = new ExpressionEstimator[2];
 	private int previousType;
-	private double startMinMax[] = new double[] { 0, 100 };
-	private int startStepValue = 5000;
+	final String GRAPH_PARAMETERS[] = {"0", "2*pi" , "5 * 1000"};//min,max,step
 	private int steps;
 	private static final String VARIABLE_NAME[] = { "x", "a", "t" };
 	private JButton button = new JButton();
@@ -59,12 +58,12 @@ public class ElementaryGraphPanel extends JPanel implements ActionListener {
 		setBackground(graph.getBackgroundColor());
 
 		for (i = 0; i < tf.length; i++) {
-			tf[i] = new JTextField(i == 2 ? startStepValue + "" : "");
+			tf[i] = new JTextField(i == 2 ? GRAPH_PARAMETERS[2] : "");
 			tf[i].addKeyListener(new KeyL());
 		}
 
-		parameterMinMaxPanel = new MinMaxPanel(graph, null);
-		parameterMinMaxPanel.setValues(startMinMax);
+		parameterMinMaxPanel = new MinMaxPanel(graph, null,this);
+		parameterMinMaxPanel.setValues(GRAPH_PARAMETERS);
 
 		button = new JButton(Helper.createImageIcon( "minus.png"));
 		button.addActionListener(this);
@@ -96,7 +95,6 @@ public class ElementaryGraphPanel extends JPanel implements ActionListener {
 		parameterPanel.add(label[3]);
 		parameterPanel.add(tf[2]);
 		parameterPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, tf[2].getPreferredSize().height));
-
 		
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		for (JComponent _c : new JComponent[] {   up[0], up[1],label[2], type, parameterPanel,button }) {
@@ -107,7 +105,6 @@ public class ElementaryGraphPanel extends JPanel implements ActionListener {
 		setGraphType(0);
 		changeLanguage();
 		recalculate();
-
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -154,33 +151,28 @@ public class ElementaryGraphPanel extends JPanel implements ActionListener {
 		graph.redraw();
 	}
 
-	private void recalculate() {
+	void recalculate() {
 		int i;
 		double v;
-		error = parameterMinMaxPanel.isError();
+		ok = parameterMinMaxPanel.ok();
 		for (i = 0; i < (isParametrical() ? 2 : 1); i++) {
 			JTextField t = tf[i];
 			try {
 				estimator[i].compile(tf[i].getText(),VARIABLE_NAME[previousType]);
 				t.setForeground(Color.black);
-			} catch (Exception e1) {
-				error = true;
+			} catch (Exception e) {
+				ok = false;
 				t.setForeground(Color.RED);
 			}
 		}
 		if (!isStandard()) {
-			JTextField t = tf[2];
-			try {
-				v = ExpressionEstimator.calculate(t.getText());
-				i = (int) v;
-				if (v <= 0 || v != i) {
-					throw new Exception();
-				}
-				steps = i;
-				t.setForeground(MinMaxPanel.okColor);
-			} catch (Exception _e1) {
-				error = true;
-				t.setForeground(MinMaxPanel.errorColor);
+			v=MinMaxPanel.parseValueSetColor(tf[2],true);
+			//v==Double.NaN is not working
+			if(Double.isNaN(v)) {
+				ok = false;
+			}
+			else {
+				steps=(int)v;
 			}
 		}
 
@@ -198,8 +190,8 @@ public class ElementaryGraphPanel extends JPanel implements ActionListener {
 		}
 	}
 
-	public boolean isError() {
-		return error;
+	public boolean ok() {
+		return ok;
 	}
 
 	public double calculate(int i, double v) throws Exception {// throws if invalid number of arguments
@@ -240,8 +232,7 @@ public class ElementaryGraphPanel extends JPanel implements ActionListener {
 
 	public void changeLanguage() {
 		label[2].setText(graph.getLanguageString(GraphPanel.STRING_ENUM.TYPE));
-		label[3].setText(graph.getLanguageString(GraphPanel.STRING_ENUM.STEPS));
-		
+		label[3].setText(graph.getLanguageString(GraphPanel.STRING_ENUM.STEPS));	
 		refillCombo();
 	}
 	

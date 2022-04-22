@@ -23,16 +23,18 @@ import estimator.ExpressionEstimator;
 @SuppressWarnings("serial")
 public class MinMaxPanel extends JPanel {
 	private JTextField t[] = new JTextField[2];
-	private double v[] = new double[t.length];
+	private double v[] = new double[2];
 	private JLabel label = new JLabel();
-	private boolean error;
 	static Color errorColor = Color.red;
 	static Color okColor = Color.black;
 	private GraphView view;
+	ElementaryGraphPanel el;
+	boolean ok[]=new boolean[2];
 
-	public MinMaxPanel(GraphPanel graph, String name) {
+	public MinMaxPanel(GraphPanel graph, String name,ElementaryGraphPanel el) {
 		int i;
 		this.view = graph.view;
+		this.el=el;
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		setBackground(graph.getBackgroundColor());
 
@@ -49,9 +51,6 @@ public class MinMaxPanel extends JPanel {
 			add(c);
 		}
 
-	}
-
-	public MinMaxPanel(GraphView view) {
 	}
 
 	public void setName(String name) {
@@ -72,49 +71,9 @@ public class MinMaxPanel extends JPanel {
 		return s;
 	}
 
-	private void setValuesNoRecount(double[] value) {
-		int i;
-		for (i = 0; i < t.length; i++) {
-			t[i].setText(format(value[i]));
-		}
-	}
-	
-	public void setValues(double[] value) {
-		setValuesNoRecount(value);
-		recount();
-	}
-
-	public boolean isError() {
-		return error;
-	}
-
 	void recount() {
-		int i;
-		error = false;
-		double tv[] = new double[v.length];
-		for (i = 0; i < t.length; i++) {
-			try {
-				tv[i] = ExpressionEstimator.calculate(t[i].getText());
-				t[i].setForeground(okColor);
-			} catch (Exception _ex) {
-				t[i].setForeground(errorColor);
-				error = true;
-			}
-		}
-
-		if (tv[0] >= tv[1]) {
-			for (i = 0; i < t.length; i++) {
-				t[i].setForeground(errorColor);
-			}
-			error = true;
-		}
-
-		if (!error) {
-			for (i = 0; i < v.length; i++) {
-				v[i] = tv[i];
-			}
-			view.redrawImage();
-		}
+		setValues(false, t[0].getText(), t[1].getText());
+		view.redrawImage();
 	}
 
 	private class KeyL implements KeyListener {
@@ -125,12 +84,70 @@ public class MinMaxPanel extends JPanel {
 		}
 
 		public void keyReleased(KeyEvent arg0) {
-			recount();
+			setValues(false, t[0].getText(), t[1].getText());
+			if(el!=null) {
+				el.recalculate();
+			}
+			view.redrawImage();
 		}
 	}
 
-	public void setValues(double a, double b) {
-		setValues(new double[] { a, b });
+	public void setValues(Double... v) {
+		setValues(true, v[0].toString(), v[1].toString());
 	}
 
+	public void setValues(String... s) {
+		setValues(true, s[0], s[1]);
+	}
+	
+	public void setValues(boolean settext, String... s) {
+		int i;
+		double a;
+		for (i = 0; i < 2; i++) {
+			if (settext) {
+				try{
+					a=Double.parseDouble(s[i]);
+					t[i].setText(format(a));
+				}
+				catch(Exception e) {
+					t[i].setText(s[i]);
+				}
+			}
+			v[i] = parseValueSetColor(t[i]);
+			ok[i] = !Double.isNaN(v[i]);
+		}
+		if (ok()) {
+			if (v[0] >= v[1]) {
+				ok[0] = ok[1] = false;
+				for (i = 0; i < 2; i++) {
+					t[i].setForeground(errorColor);
+				}
+			}
+		}
+	}
+
+	boolean ok() {
+		return ok[0] && ok[1];
+	}
+	
+	static double parseValueSetColor(JTextField t) {
+		return parseValueSetColor(t,false);
+	}
+
+	static double parseValueSetColor(JTextField t,boolean steps) {
+		double v;
+		try {
+			v = ExpressionEstimator.calculate(t.getText());
+			if (steps && (v <= 0 || v != (int) v)) {
+				throw new Exception();
+			}
+
+		} catch (Exception e) {
+			v = Double.NaN;
+		}
+		// v==Double.NaN is not working
+		t.setForeground(Double.isNaN(v) ? errorColor : okColor);
+		return v;
+	}
+	
 }

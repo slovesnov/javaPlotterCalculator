@@ -294,8 +294,9 @@ public class ExpressionEstimator {
 		} else if (isDigit() || isPoint()) {
 			//17apr2022
 			if(expression[position]=='0' && (j="XB".indexOf(expression[position+1])) !=-1) {
-				j=j==0?16:2;
+				j = j == 0 ? 16 : 2;
 				position++;
+				
 				k=-1;
 				for (i = position++; isFunctionSymbol() || isPoint(); position++) {
 					if(expression[position]=='_') {
@@ -308,13 +309,27 @@ public class ExpressionEstimator {
 						k=position;
 					}
 				}
-				s=new String(expression, i+1, (k==-1 ? position:k-1) - i);
-				tokenValue = k != -1 && s.isEmpty() ? 0 : Integer.parseInt(s, j);
-				if(k!=-1) {
-					k++;
-					s=new String(expression, k, position - k);
-					tokenValue += s.isEmpty() ? 0 : Integer.parseInt(s,j)/Math.pow(j,s.length());					
+				s = new String(expression, i + 1, (k == -1 ? position : k) - i - 1);
+				boolean f = s.isEmpty();
+//				System.out.println("l1 "+s+s.length()+" "+k +" "+ expression.length);
+				tokenValue = s.isEmpty() ? 0 : Long.parseUnsignedLong(s, j);
+//				System.out.println("l2 "+s+s.length()+" "+k +" "+ expression.length);
+				if (k == -1) {
+					if (f) {
+						throw new Exception("invalid number");
+					}
 				}
+				else {
+					k++;
+					s = new String(expression, k, position - k);
+//					System.out.println("l "+s+s.length()+" "+k +" "+ expression.length);
+					if (f && s.isEmpty()) {
+						throw new Exception("invalid number");
+					}
+//					System.out.println("l@ "+s+s.length()+" "+position +" "+ expression.length);
+					tokenValue += s.isEmpty() ? 0 : Long.parseUnsignedLong(s, j) / Math.pow(j, s.length());
+				}
+				
 	
 			}
 			else {

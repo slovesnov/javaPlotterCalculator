@@ -88,7 +88,7 @@ public class GraphView extends JPanel implements MouseListener, MouseMotionListe
 				}
 				graph.axisLimits[j].setValues(Math.min(a[0], a[1]), Math.max(a[0], a[1]));
 			}
-
+			graph.redraw();
 		}
 		point[0] = null;
 	}
@@ -137,7 +137,7 @@ public class GraphView extends JPanel implements MouseListener, MouseMotionListe
 	public void redrawImage() {
 		int i, j;
 		double t, r, x, y;
-		
+
 		if(lastSize.width==0 && getSize().width!=0) {//first drawing update axis
 			lastSize = getSize();
 			graph.resetAxis();
@@ -153,9 +153,10 @@ public class GraphView extends JPanel implements MouseListener, MouseMotionListe
 		Dimension d = getSize();
 
 		g.setColor(graph.getBackgroundColor());
-		g.fillRect(1, 1, d.width, d.height);
+		g.fillRect(0, 0, d.width, d.height);
 
-		if (graph.isError()) {
+		if (!graph.ok()) {
+			repaint();
 			return;
 		}
 
@@ -167,9 +168,9 @@ public class GraphView extends JPanel implements MouseListener, MouseMotionListe
 
 		i = getScreenY(0);
 		g.drawLine(0, i, d.width , i);
-
+		
 		for (ElementaryGraphPanel e : graph.elementary) {
-			if (e.isError()) {
+			if (!e.ok()) {
 				continue;
 			}
 
