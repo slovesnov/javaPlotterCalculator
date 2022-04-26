@@ -595,6 +595,7 @@ public class ExpressionEstimator {
 	    	}
 	    	
 			//should not happen
+	    	//System.out.println(Thread.currentThread().getStackTrace()[1]);
 			StackTraceElement stack = Thread.currentThread().getStackTrace()[1];
 			throw new Exception("unknown variable found " + stack.getClassName() + " " + stack.getMethodName() + ":"
 					+ stack.getLineNumber());
