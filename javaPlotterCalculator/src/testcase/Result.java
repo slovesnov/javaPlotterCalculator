@@ -15,7 +15,6 @@ public class Result {
 	void set(ErrorCode code, double v) {
 		errorCode = code;
 		value = v;
-
 	}
 
 	void set(String s, int line) {

@@ -1,61 +1,61 @@
 "0x."
-scompile
+static_compile
 compile_error
 
 "0x"
-scompile
+static_compile
 compile_error
 
 "0x1"
-scompile
+static_compile
 1
 
 "0x.1"
-scompile
+static_compile
 0.0625
 
 "0x.+1"
-scompile
+static_compile
 compile_error
 
 "0x+1"
-scompile
+static_compile
 compile_error
 
 "0x1.1"
-scompile
+static_compile
 1.0625
 
 "0b"
-scompile
+static_compile
 compile_error
 
 "0b."
-scompile
+static_compile
 compile_error
 
 "0b1"
-scompile
+static_compile
 1
 
 "0b.1"
-scompile
+static_compile
 .5
 
 "0b.+1"
-scompile
+static_compile
 compile_error
 
 "0b+1"
-scompile
+static_compile
 compile_error
 
 "0b1.1"
-scompile
+static_compile
 1.5
 
 "+1.e1"
-scompile
+static_compile
 10
 
 "a+2*A" "a A" "1 2"
@@ -68,4 +68,20 @@ calculate_error
 
 "a+2*A+" "a A" "1 2"
 compile_calculate
+compile_error
+
+"x0"
+static_compile
+compile_error
+
+"a"
+static_compile
+compile_error
+
+"x0+x1"
+static_compile
+compile_error
+
+"a+b"
+static_compile
 compile_error
