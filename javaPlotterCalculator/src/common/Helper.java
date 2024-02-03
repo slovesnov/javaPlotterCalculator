@@ -55,36 +55,35 @@ public class Helper {
 			JOptionPane.showMessageDialog(null, "cann't browse " + address, "Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
-	
-	public static 	List<Image> createImageIcons(String path) {
+
+	public static List<Image> createImageIcons(String path) {
 		List<Image> l = new ArrayList<Image>();
 		int a[] = { 16, 32, 48, 128 };
 		for (int i : a) {
 			l.add(Helper.createImageIcon(path + i + ".png").getImage());
 		}
 		return l;
-	}	
+	}
 
 	public static int loadLanguageFromFile(String fileName) {
-		int l=0;
+		int l = 0;
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(fileName));
 			String line;
 			while ((line = reader.readLine()) != null) {
-				l=Integer.parseInt(line);
+				l = Integer.parseInt(line);
 				break;
 			}
 			reader.close();
+		} catch (Exception e) {
 		}
-	    catch (Exception e) {
-		}
-		return l;	
+		return l;
 	}
 
-	public static void saveLanguageToFile(String fileName,int language) {
+	public static void saveLanguageToFile(String fileName, int language) {
 		try {
-			BufferedWriter w=new BufferedWriter(new FileWriter(fileName));
-			w.write(language+"");
+			BufferedWriter w = new BufferedWriter(new FileWriter(fileName));
+			w.write(language + "");
 			w.close();
 		} catch (IOException e) {
 		}

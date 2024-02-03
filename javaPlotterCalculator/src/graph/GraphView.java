@@ -138,7 +138,7 @@ public class GraphView extends JPanel implements MouseListener, MouseMotionListe
 		int i, j;
 		double t, r, x, y;
 
-		if(lastSize.width==0 && getSize().width!=0) {//first drawing update axis
+		if (lastSize.width == 0 && getSize().width != 0) {// first drawing update axis
 			lastSize = getSize();
 			graph.resetAxis();
 			return;
@@ -147,7 +147,7 @@ public class GraphView extends JPanel implements MouseListener, MouseMotionListe
 		if (lastSize.width == 0 || lastSize.height == 0) {
 			return;
 		}
-		
+
 		image = new BufferedImage(getSize().width, getSize().height, BufferedImage.TYPE_INT_RGB);
 		Graphics g = image.getGraphics();
 		Dimension d = getSize();
@@ -162,13 +162,13 @@ public class GraphView extends JPanel implements MouseListener, MouseMotionListe
 
 		g.setColor(Color.black);
 //		g.drawOval(0, 0, d.width, d.height);		
-		
+
 		i = getScreenX(0);
-		g.drawLine(i, 0, i, d.height );
+		g.drawLine(i, 0, i, d.height);
 
 		i = getScreenY(0);
-		g.drawLine(0, i, d.width , i);
-		
+		g.drawLine(0, i, d.width, i);
+
 		for (ElementaryGraphPanel e : graph.elementary) {
 			if (!e.ok()) {
 				continue;
@@ -178,8 +178,11 @@ public class GraphView extends JPanel implements MouseListener, MouseMotionListe
 			try {
 				if (e.isStandard()) {
 					for (i = 0; i < d.width; i++) {
-						j = getScreenY(e.calculate(0, getX(i)));
-						g.drawLine(i, j, i, j);
+						y = e.calculate(0, getX(i));
+						j = getScreenY(y);
+						if (!Double.isNaN(y)) {
+							g.drawLine(i, j, i, j);
+						}
 					}
 				} else if (e.isPolar() || e.isParametrical()) {
 					for (t = e.getParameterMin(); t <= e.getParameterMax(); t += e.getParameterStep()) {
@@ -193,7 +196,9 @@ public class GraphView extends JPanel implements MouseListener, MouseMotionListe
 						}
 						i = getScreenX(x);
 						j = getScreenY(y);
-						g.drawLine(i, j, i, j);
+						if (!Double.isNaN(x) && !Double.isNaN(y)) {
+							g.drawLine(i, j, i, j);
+						}
 					}
 				}
 			} catch (Exception ex) {

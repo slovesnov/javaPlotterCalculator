@@ -30,19 +30,19 @@ import common.Language;
 import common.LanguageComboBox;
 
 @SuppressWarnings("serial")
-public class GraphPanel extends JPanel implements ActionListener,Language {
+public class GraphPanel extends JPanel implements ActionListener, Language {
 
-	private static final String languageString[][] = { { "plotter", "reset", "type",
-		"standard", "polar (a is angle)", "parametrical", "steps" }, {
-		"построитель графиков", "сброс", "тип", "стандартный",
-		"пол€рный (a - угол)", "параметрический", "шагов" } };
+	private static final String languageString[][] = {
+			{ "plotter", "reset", "type", "standard", "polar (a is angle)", "parametrical", "steps" },
+			{ "построитель графиков", "сброс", "тип", "стандартный", "пол€рный (a - угол)", "параметрический",
+					"шагов" } };
 
 	static enum STRING_ENUM {
-		PLOTTER, RESET, TYPE,
-		STANDARD, POLAR, PARAMETRICAL, STEPS;	
+		PLOTTER, RESET, TYPE, STANDARD, POLAR, PARAMETRICAL, STEPS;
+
 		static final STRING_ENUM TYPES[] = { STANDARD, POLAR, PARAMETRICAL };
 	};
-	
+
 	Vector<ElementaryGraphPanel> elementary = new Vector<>();
 	private final static Color[] graphColor = { new Color(0, 0, 0), new Color(205, 92, 92), new Color(0, 128, 0),
 			new Color(0, 0, 255), new Color(0x80, 0x80, 0), new Color(255, 165, 0) };
@@ -63,7 +63,7 @@ public class GraphPanel extends JPanel implements ActionListener,Language {
 	private Color backgroundColor;
 	private static final String HOMEPAGE = "http://javadiagram.sourceforge.net";
 	int language;
-	private String config="javaGraph.cfg";
+	private String config = "javaGraph.cfg";
 
 	public GraphPanel() {
 		int i;
@@ -80,7 +80,7 @@ public class GraphPanel extends JPanel implements ActionListener,Language {
 		up.setMaximumSize(new Dimension(Integer.MAX_VALUE, resetButton.getPreferredSize().height));
 		up.setBackground(backgroundColor);
 
-		final String bname[] = { "plus","viewmag+", "viewmag-", "help" };
+		final String bname[] = { "plus", "viewmag+", "viewmag-", "help" };
 		for (i = 0; i < 4; i++) {
 			pictureButton[i] = new JButton(Helper.createImageIcon(bname[i] + ".png"));
 			pictureButton[i].addActionListener(this);
@@ -89,26 +89,26 @@ public class GraphPanel extends JPanel implements ActionListener,Language {
 			}
 		}
 		up.add(resetButton);
-	
+
 		for (i = 0; i < 2; i++) {
-			axisLimits[i] = new MinMaxPanel(this, axisName[i],null);
+			axisLimits[i] = new MinMaxPanel(this, axisName[i], null);
 			up.add(axisLimits[i]);
 		}
 		up.add(Box.createRigidArea(margin));
 
-		language=Helper.loadLanguageFromFile(config);//before LanguageComboBox creation
-		
-		info.setMinimumSize(new Dimension(180,-1));
+		language = Helper.loadLanguageFromFile(config);// before LanguageComboBox creation
+
+		info.setMinimumSize(new Dimension(180, -1));
 		up.add(info);
 		LanguageComboBox cl = new LanguageComboBox(this);
 		up.add(cl);
 		up.add(pictureButton[3]);
 
 		reset();
-		
+
 		changeLanguage(language);
-		
-		add(new JScrollPane(mainPanel));		
+
+		add(new JScrollPane(mainPanel));
 	}
 
 	public Color getBackgroundColor() {
@@ -134,10 +134,9 @@ public class GraphPanel extends JPanel implements ActionListener,Language {
 		} else {
 			for (int i = 0; i < pictureButton.length; i++) {
 				if (pictureButton[i] == arg0.getSource()) {
-					if(i==0) {
+					if (i == 0) {
 						addGraph();
-					}
-					else if (i == 3) {
+					} else if (i == 3) {
 						Helper.openWebpage(HOMEPAGE);
 					} else {
 						zoom(i == 2);
@@ -157,7 +156,7 @@ public class GraphPanel extends JPanel implements ActionListener,Language {
 		for (i = 0; i < 2; i++) {
 			m = axisLimits[i];
 			for (j = 0; j < 2; j++) {
-				v[j] = (m.getMin() + m.getMax()) / 2 + (j == 0 ? -1 : +1) * multiply * (m.getMax() - m.getMin())/2;
+				v[j] = (m.getMin() + m.getMax()) / 2 + (j == 0 ? -1 : +1) * multiply * (m.getMax() - m.getMin()) / 2;
 			}
 			m.setValues(v);
 		}
@@ -166,8 +165,8 @@ public class GraphPanel extends JPanel implements ActionListener,Language {
 
 	private void reset() {
 		elementary.clear();
-		addGraph();		
-		view.lastSize.width=0;
+		addGraph();
+		view.lastSize.width = 0;
 	}
 
 	void resetAxis() {
@@ -191,7 +190,7 @@ public class GraphPanel extends JPanel implements ActionListener,Language {
 
 	public void addGraph() {
 		int i;
-		Vector<Integer[]> v=new Vector<>();
+		Vector<Integer[]> v = new Vector<>();
 		for (i = 0; i < graphColor.length; i++) {
 			v.add(new Integer[] { i, 0 });
 		}
@@ -225,11 +224,11 @@ public class GraphPanel extends JPanel implements ActionListener,Language {
 
 	public void updateMousePoint(double x, double y) {
 		int i;
-		String s="";
+		String s = "";
 		for (i = 0; i < 2; i++) {
-			s+=axisName[i]+"="+MinMaxPanel.format(i == 0 ? x : y);
-			if(i==0) {
-				s+=" ";
+			s += axisName[i] + " = " + MinMaxPanel.format(i == 0 ? x : y);
+			if (i == 0) {
+				s += " ";
 			}
 		}
 		info.setText(s);
@@ -241,22 +240,22 @@ public class GraphPanel extends JPanel implements ActionListener,Language {
 
 	@Override
 	public void changeLanguage(int language) {
-		this.language=language;
+		this.language = language;
 		JFrame f = (JFrame) SwingUtilities.windowForComponent(this);
-		if(f!=null) {
+		if (f != null) {
 			f.setTitle(getTitle());
 		}
-		
-		resetButton.setText(getLanguageString(STRING_ENUM.RESET));	
-		for(ElementaryGraphPanel g:elementary) {
+
+		resetButton.setText(getLanguageString(STRING_ENUM.RESET));
+		for (ElementaryGraphPanel g : elementary) {
 			g.changeLanguage();
 		}
 	}
-	
+
 	public String getTitle() {
 		return getLanguageString(STRING_ENUM.PLOTTER);
 	}
-	
+
 	String getLanguageString(STRING_ENUM e) {
 		return languageString[language][e.ordinal()];
 	}
@@ -267,7 +266,7 @@ public class GraphPanel extends JPanel implements ActionListener,Language {
 	}
 
 	public void saveConfig() {
-		Helper.saveLanguageToFile(config,language);	
+		Helper.saveLanguageToFile(config, language);
 	}
-	
+
 }

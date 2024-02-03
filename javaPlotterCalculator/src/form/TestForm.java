@@ -17,10 +17,9 @@ import java.util.List;
 import javax.swing.JFrame;
 import common.Helper;
 
-
 @SuppressWarnings("serial")
-public class TestForm extends JFrame{
-	
+public class TestForm extends JFrame {
+
 	public TestForm() {
 		super("test");
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);

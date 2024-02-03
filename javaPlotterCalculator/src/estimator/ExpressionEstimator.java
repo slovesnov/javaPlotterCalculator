@@ -7,40 +7,28 @@ All rights reserved.
 
 package estimator;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ExpressionEstimator {
 
 	private enum OPERATOR {
-		// note OPERATOR enums is case sensitive (cause use OPERATOR.valueof())! use
-		// only capital characters,names equal to parsing string
+		/*
+		 * note OPERATOR enums is case sensitive (cause use OPERATOR.valueof())! use
+		 * only capital characters,names equal to parsing string PLUS should be first in
+		 * enum. Common operators should go in a row. Order is important. POW, ATAN2,
+		 * MIN, MAX should go in a row see parse3 function PLUS-POW should go in row
+		 * getToken() POW-SQRT should go in row from parse3() finally PLUS should be
+		 * first, PLUS-SQRT should goes in row
+		 */
 		PLUS, MINUS, MULTIPLY, DIVIDE, LEFT_BRACKET, RIGHT_BRACKET, LEFT_SQUARE_BRACKET, RIGHT_SQUARE_BRACKET,
-		LEFT_CURLY_BRACKET, RIGHT_CURLY_BRACKET, COMMA // PLUS should be first in enum. Common operators should go in a
-														// row. Order is important.
-		, SIN, COS, TAN, COT, SEC, CSC, ASIN, ACOS, ATAN, ACOT, ASEC, ACSC, SINH, COSH, TANH, COTH, SECH, CSCH, ASINH,
-		ACOSH, ATANH, ACOTH, ASECH, ACSCH, RANDOM, CEIL, FLOOR, ROUND, ABS, EXP, LOG, SQRT, POW, ATAN2, MIN, MAX// Functions
-																												// from
-																												// 'sin'
-																												// to
-																												// 'max'
-																												// (should
-																												// go in
-																												// a
-																												// row),
-																												// first
-																												// function
-																												// should
-																												// be
-																												// 'sin',
-																												// last
-																												// should
-																												// be
-																												// 'max'
-		, X, NUMBER, UNARY_MINUS, END
+		LEFT_CURLY_BRACKET, RIGHT_CURLY_BRACKET, COMMA, POW, ATAN2, MIN, MAX, SIN, COS, TAN, COT, SEC, CSC, ASIN, ACOS,
+		ATAN, ACOT, ASEC, ACSC, SINH, COSH, TANH, COTH, SECH, CSCH, ASINH, ACOSH, ATANH, ACOTH, ASECH, ACSCH, RANDOM,
+		CEIL, FLOOR, ROUND, ABS, EXP, LOG, SQRT, X, NUMBER, UNARY_MINUS, END
 	}
-	// POW,ATAN2,MIN,MAX should go in a row see parse3 function
 
 	private enum CONSTANT_NAME {
 		PI, E, SQRT2, SQRT1_2, LN2, LN10, LOG2E, LOG10E // Constants should go in a row. Order is important
@@ -81,146 +69,136 @@ public class ExpressionEstimator {
 		}
 
 		double calculate() throws Exception {
-			double x;
+			double l = left == null ? 0 : left.calculate();
+			double r = right == null ? 0 : right.calculate();
 			switch (operator) {
 
 			case NUMBER:
 				return value;
 
 			case PLUS:
-				return left.calculate() + right.calculate();
+				return l + r;
 
 			case MINUS:
-				return left.calculate() - right.calculate();
+				return l - r;
 
 			case MULTIPLY:
-				return left.calculate() * right.calculate();
+				return l * r;
 
 			case DIVIDE:
-				return left.calculate() / right.calculate();
+				return l / r;
 
 			case UNARY_MINUS:
-				return -left.calculate();
+				return -l;
 
 			case SIN:
-				return Math.sin(left.calculate());
+				return Math.sin(l);
 
 			case COS:
-				return Math.cos(left.calculate());
+				return Math.cos(l);
 
 			case TAN:
-				return Math.tan(left.calculate());
+				return Math.tan(l);
 
 			case COT:
-				return 1 / Math.tan(left.calculate());
+				return 1 / Math.tan(l);
 
 			case SEC:
-				return 1 / Math.cos(left.calculate());
+				return 1 / Math.cos(l);
 
 			case CSC:
-				return 1 / Math.sin(left.calculate());
+				return 1 / Math.sin(l);
 
 			case ASIN:
-				return Math.asin(left.calculate());
+				return Math.asin(l);
 
 			case ACOS:
-				return Math.acos(left.calculate());
+				return Math.acos(l);
 
 			case ATAN:
-				return Math.atan(left.calculate());
+				return Math.atan(l);
 
 			case ACOT:
-				return Math.PI / 2 - Math.atan(left.calculate());
+				return Math.PI / 2 - Math.atan(l);
 
 			case ASEC:
-				return Math.acos(1 / left.calculate());
+				return Math.acos(1 / l);
 
 			case ACSC:
-				return Math.asin(1 / left.calculate());
+				return Math.asin(1 / l);
 
 			case SINH:
-				x = left.calculate();
-				return (Math.exp(x) - Math.exp(-x)) / 2;
+				return Math.sinh(l);
 
 			case COSH:
-				x = left.calculate();
-				return (Math.exp(x) + Math.exp(-x)) / 2;
+				return Math.cosh(l);
 
 			case TANH:
-				x = left.calculate();
-				return (Math.exp(2 * x) - 1) / (Math.exp(2 * x) + 1);
+				return Math.tanh(l);
 
 			case COTH:
-				x = left.calculate();
-				return (Math.exp(2 * x) + 1) / (Math.exp(2 * x) - 1);
+				return 1 / Math.tanh(l);
 
 			case SECH:
-				x = left.calculate();
-				return 2 / (Math.exp(x) + Math.exp(-x));
+				return 1 / Math.cosh(l);
 
 			case CSCH:
-				x = left.calculate();
-				return 2 / (Math.exp(x) - Math.exp(-x));
+				return 1 / Math.sinh(l);
 
+			// functions Math.asinh, Math.acosh, Math.atanh do not exists
 			case ASINH:
-				x = left.calculate();
-				return Math.log(x + Math.sqrt(x * x + 1));
+				return Math.log(l + Math.sqrt(l * l + 1));
 
 			case ACOSH:
-				x = left.calculate();
-				return Math.log(x + Math.sqrt(x * x - 1));
+				return Math.log(l + Math.sqrt(l * l - 1));
 
 			case ATANH:
-				x = left.calculate();
-				return Math.log((1 + x) / (1 - x)) / 2;
+				return Math.log((1 + l) / (1 - l)) / 2;
 
 			case ACOTH:
-				x = left.calculate();
-				return Math.log((x + 1) / (x - 1)) / 2;
+				return Math.log((l + 1) / (l - 1)) / 2;
 
 			case ASECH:
-				x = left.calculate();
-				return Math.log((1 + Math.sqrt(1 - x * x)) / x);
+				return Math.log((1 + Math.sqrt(1 - l * l)) / l);
 
 			case ACSCH:
-				x = left.calculate();
-				return Math.log(1 / x + Math.sqrt(1 + x * x) / Math.abs(x));
+				return Math.log(1 / l + Math.sqrt(1 + l * l) / Math.abs(l));
 
 			case RANDOM:
 				return Math.random();
 
 			case CEIL:
-				return Math.ceil(left.calculate());
+				return Math.ceil(l);
 
 			case FLOOR:
-				return Math.floor(left.calculate());
+				return Math.floor(l);
 
 			case ROUND:
-				return Math.round(left.calculate());
+				return Math.round(l);
 
 			case ABS:
-				return Math.abs(left.calculate());
+				return Math.abs(l);
 
 			case EXP:
-				return Math.exp(left.calculate());
+				return Math.exp(l);
 
 			case LOG:
-				return Math.log(left.calculate());
+				return Math.log(l);
 
 			case SQRT:
-				return Math.sqrt(left.calculate());
+				return Math.sqrt(l);
 
 			case POW:
-				return Math.pow(left.calculate(), right.calculate());
+				return Math.pow(l, r);
 
 			case ATAN2:
-				return Math.atan2(left.calculate(), right.calculate());
+				return Math.atan2(l, r);
 
 			case MIN:
-				return Math.min(left.calculate(), right.calculate());
+				return Math.min(l, r);
 
 			case MAX:
-				return Math.max(left.calculate(), right.calculate());
+				return Math.max(l, r);
 
 			case X:
 				return argument[(int) value];
@@ -243,127 +221,99 @@ public class ExpressionEstimator {
 		return expression[position] == '.';
 	}
 
+	private boolean isDigitOrPoint() {
+		return isDigit() || isPoint();
+	}
+
 	private boolean isFunctionSymbol() {
 		byte c = expression[position];
 		return Character.isLetterOrDigit(c) || c == '_';
 	}
 
 	private void getToken() throws Exception {
-		int i,j,k;
+		int i, j, k, sh;
 		String s;
 
 		if (position == expression.length - 1) {
 			operator = OPERATOR.END;
-		} else if ((i = "+-*/()[]{},".indexOf(expression[position])) != -1) {
+		} else if ((i = "+-*/()[]{},^".indexOf(expression[position])) != -1) {
 			position++;
 			operator = OPERATOR.values()[i];
 		} else if (isLetter()) {
 			for (i = position++; isFunctionSymbol(); position++)
 				;
 			s = new String(expression, i, position - i);
-			
 
-			try {
-				if (s.charAt(0) == 'X' && s.length() == 1) {
-					throw new Exception("unknown keyword");
-				} else if (s.charAt(0) == 'X' && s.length() > 1 && Character.isDigit(s.charAt(1))) {
-					i = Integer.parseInt(s.substring(1));
-					if (i < 0) {
-						throw new Exception("index of 'x' should be nonnegative integer number");
-					}
-					if (arguments < i + 1) {
-						arguments = i + 1;
-					}
-					operator = OPERATOR.X;
-					tokenValue = i;
-				} else {
+			if (s.charAt(0) == 'X' && s.length() > 1 && Character.isDigit(s.charAt(1))) {
+				i = Integer.parseInt(s.substring(1));
+				if (i < 0) {
+					throw new Exception("index of 'x' should be nonnegative integer number");
+				}
+				if (arguments < i + 1) {
+					arguments = i + 1;
+				}
+				operator = OPERATOR.X;
+				tokenValue = i;
+			} else {
+				try {
 					operator = OPERATOR.valueOf(s);
 					i = operator.ordinal();
-					if (i < OPERATOR.SIN.ordinal() || i > OPERATOR.MAX.ordinal()) {
+					if (i < OPERATOR.POW.ordinal() || i > OPERATOR.SQRT.ordinal()) {
 						throw new IllegalArgumentException();
 					}
-				}
-			} catch (IllegalArgumentException _ex) {
-				try {
-					tokenValue = CONSTANT_VALUE[CONSTANT_NAME.valueOf(s).ordinal()];
-					operator = OPERATOR.NUMBER;
-				} catch (IllegalArgumentException ex) {
-					throw new Exception("unknown keyword "+s);
+				} catch (IllegalArgumentException _ex) {
+					try {
+						tokenValue = CONSTANT_VALUE[CONSTANT_NAME.valueOf(s).ordinal()];
+						operator = OPERATOR.NUMBER;
+					} catch (IllegalArgumentException ex) {
+						throw new Exception("unknown keyword \"" + s + "\"");
+					}
 				}
 			}
-		} else if (isDigit() || isPoint()) {
-			//17apr2022
-			if(expression[position]=='0' && (j="XB".indexOf(expression[position+1])) !=-1) {
-				j = j == 0 ? 16 : 2;
+		} else if (isDigitOrPoint()) {
+			if (expression[position] == '0' && position + 1 < expression.length
+					&& (j = "BOX".indexOf(expression[position + 1])) != -1) {
+				sh = new int[] { 1, 3, 4 }[j];
+				j = 1 << sh;
 				position++;
-				
-				k=-1;
+				k = -1;
 				for (i = position++; isFunctionSymbol() || isPoint(); position++) {
-					if(expression[position]=='_') {
+					if (expression[position] == '_') {
 						throw new Exception("invalid number");
 					}
-					if(isPoint()) {
-						if(k!=-1) {
+					if (isPoint()) {
+						if (k != -1) {
 							throw new Exception("invalid number");
 						}
-						k=position;
+						k = position;
 					}
 				}
 				s = new String(expression, i + 1, (k == -1 ? position : k) - i - 1);
 				boolean f = s.isEmpty();
-//				System.out.println("l1 "+s+s.length()+" "+k +" "+ expression.length);
-				tokenValue = s.isEmpty() ? 0 : Long.parseUnsignedLong(s, j);
-//				System.out.println("l2 "+s+s.length()+" "+k +" "+ expression.length);
+				tokenValue = f ? 0 : Long.parseUnsignedLong(s, j);
 				if (k == -1) {
 					if (f) {
 						throw new Exception("invalid number");
 					}
-				}
-				else {
+				} else {
 					k++;
 					s = new String(expression, k, position - k);
-//					System.out.println("l "+s+s.length()+" "+k +" "+ expression.length);
 					if (f && s.isEmpty()) {
 						throw new Exception("invalid number");
 					}
-//					System.out.println("l@ "+s+s.length()+" "+position +" "+ expression.length);
-					tokenValue += s.isEmpty() ? 0 : Long.parseUnsignedLong(s, j) / Math.pow(j, s.length());
+					tokenValue += s.isEmpty() ? 0 : Long.parseUnsignedLong(s, j) / (double) (1l << (sh * s.length()));
 				}
-				
-	
-			}
-			else {
-				for (i = position++; isDigit() || isPoint() || expression[position] == 'E'
+
+			} else {
+				for (i = position++; isDigitOrPoint() || expression[position] == 'E'
 						|| expression[position - 1] == 'E' && "+-".indexOf(expression[position]) != -1; position++)
 					;
-	
+
 				tokenValue = Double.parseDouble(new String(expression, i, position - i));
 			}
 			operator = OPERATOR.NUMBER;
 		} else {
 			throw new Exception("unknown symbol");
-		}
-
-	}
-
-	public void compile(String expression) throws Exception {
-		position = 0;
-		arguments = 0;
-		String s = expression.toUpperCase();// for OPERATOR.valueof()
-
-		String from[] = { " ", "\t" };
-		for (int i = 0; i < from.length; i++) {
-			s = s.replace(from[i], "");
-		}
-		this.expression = (s + '\0').getBytes();
-
-		getToken();
-		if (operator == OPERATOR.END) {
-			throw new Exception("unexpected end of expression");
-		}
-		root = parse();
-		if (operator != OPERATOR.END) {
-			throw new Exception("end of expression expected");
 		}
 
 	}
@@ -383,7 +333,7 @@ public class ExpressionEstimator {
 
 	private Node parse1() throws Exception {
 		Node node = parse2();
-		while (operator == OPERATOR.MULTIPLY || operator == OPERATOR.DIVIDE) {
+		while (operator == OPERATOR.MULTIPLY || operator == OPERATOR.DIVIDE || operator == OPERATOR.POW) {
 			node = new Node(operator, node);
 			getToken();
 			if (operator == OPERATOR.PLUS || operator == OPERATOR.MINUS) {
@@ -411,17 +361,11 @@ public class ExpressionEstimator {
 	private Node parse3() throws Exception {
 		Node node;
 		OPERATOR open;
+		int arguments;
 
-		if (operator.ordinal() >= OPERATOR.SIN.ordinal() && operator.ordinal() <= OPERATOR.MAX.ordinal()) {
-			int arguments;
-			if (operator.ordinal() >= OPERATOR.POW.ordinal() && operator.ordinal() <= OPERATOR.MAX.ordinal()) {
-				arguments = 2;
-			} else {
-				arguments = operator == OPERATOR.RANDOM ? 0 : 1;
-			}
-
+		if (operator.ordinal() >= OPERATOR.POW.ordinal() && operator.ordinal() <= OPERATOR.SQRT.ordinal()) {
+			arguments = operator.ordinal() <= OPERATOR.MAX.ordinal() ? 2 : (operator == OPERATOR.RANDOM ? 0 : 1);
 			node = new Node(operator);
-
 			getToken();
 			open = operator;
 			if (operator != OPERATOR.LEFT_BRACKET && operator != OPERATOR.LEFT_SQUARE_BRACKET
@@ -476,11 +420,12 @@ public class ExpressionEstimator {
 		}
 	}
 
+	// if pass array then java splits to parameters
 	public double calculate(double... x) throws Exception {
 		this.argument = x;
 		return calculate();
 	}
-	
+
 	public double calculate() throws Exception {
 		if (root == null) {
 			throw new Exception("using of calculate() without compile()");
@@ -499,108 +444,95 @@ public class ExpressionEstimator {
 	public int getArguments() {
 		return arguments;
 	}
-	
-	public ExpressionEstimator() {		
+
+	public ExpressionEstimator() {
 	}
-	
+
 	public ExpressionEstimator(String e) throws Exception {
 		compile(e);
 	}
-	
-	public ExpressionEstimator(String e,String ...s) throws Exception {
-		compile(e,s);
-	}	
-	
+
+	public ExpressionEstimator(String e, String... s) throws Exception {
+		compile(e, s);
+	}
+
 	public static double calculate(String s) throws Exception {
 		ExpressionEstimator estimator = new ExpressionEstimator();
 		estimator.compile(s);
 		estimator.argument = null;// clear all arguments
 		return estimator.calculate();
 	}
-	
+
 	private static String bregex(String s) {
-		return "\\b"+s+"\\b";
+		return "\\b" + s + "\\b";
 	}
-	
-	private static String reservedWords[] = { "exp", "log", "pow", "sqrt", "abs",
-			"random", "min", "max", "pi", "e", "sqrt2", "sqrt1_2", "ln2", "ln10",
-			"log2e", "log10e", "sin", "cos", "tan", "cot", "sec", "csc", "asin",
-			"acos", "atan", "acot", "asec", "acsc", "sinh", "cosh", "tanh", "coth",
-			"sech", "csch", "asinh", "acosh", "atanh", "acoth", "asech", "acsch",
-			"ceil", "floor", "round", "atan2" };
-	
-	public void compile(String expression,String...variables) throws Exception{
+
+	// if pass array then java splits to parameters
+	public void compile(String expression, String... variables) throws Exception {
 		int i;
-		String s, q = null, e = expression;
+		String s = expression.replaceAll("\\s+", "").replaceAll("\\*{2}", "^");
 		String v[];
-		//char r should be \w because use \b in regex replace. 0x10=16 is good. so use '1' 1x.. is invalid
-		final char r = '1';
+		final String r = "#";
 
-		v = Arrays.copyOf(variables, variables.length);
-		Arrays.sort(v);
+		if (variables.length > 0) {
+			v = Arrays.copyOf(variables, variables.length);
+			Arrays.sort(v);
+			i = 0;
+			for (String a : v) {
+				if (reservedWords.contains(a.toUpperCase())) {
+					throw new Exception("reserved word \"" + a + "\" is used as variable");
+				}
+				// also check empty
+				if (!Pattern.compile("^_*[A-Za-z]\\w*$").matcher(a).find()) {
+					throw new Exception("invalid variable name \"" + a + "\"");
+				}
+				if (i > 0 && a.equals(v[i - 1])) {
+					throw new Exception("repeated variable \"" + a + "\" in list");
+				}
+				i++;
+			}
 
-		i = 0;
-		for (String a : v) {
-			if (Arrays.asList(reservedWords).contains(a.toLowerCase())) {
-				throw new Exception("reserved word \"" + a + "\" is used as variable");
+			if (s.indexOf(r) != -1) {
+				throw new Exception(r + " found in string");
 			}
-			//also check empty
-			if (!Pattern.compile("^_*[A-Za-z]\\w*$").matcher(a).find()) {
-				throw new Exception("invalid variable name \"" + a + "\"");
+
+			i = 0;
+			for (String e : variables) {
+				s = s.replaceAll(bregex(e), r + i);
+				i++;
 			}
-			if (i > 0 && a == v[i-1]) {
-				throw new Exception("repeated variable \"" + a + "\" in list");
+
+			Matcher matcher = Pattern.compile("[xX]\\d*").matcher(s);
+			if (matcher.find()) {
+				throw new Exception("unknown variable \"" + matcher.group() + "\"");
 			}
-			i++;
+
+			s = s.replaceAll(r, "X");
 		}
 
-		v = Arrays.copyOf(variables, variables.length);
-		i = 0;
-		for (String a : v) {
-			q=r+a;			
-			//check 1x... before replace or compile("1x0","x0") will be ok
-	        Matcher matcher = Pattern.compile("\\w*"+q+"\\w*").matcher(expression);
-	        if (matcher.find()) {
-				throw new Exception("invalid keyword \"" + matcher.group()+"\"");
-	        }
-			
-			if (Pattern.compile("^[xX]\\d+$").matcher(a).find()) {
-				e = e.replaceAll(bregex(a), q);
-				v[i] = q;
-			}
-			i++;
+		position = 0;
+		arguments = variables.length;
+		s = s.toUpperCase();// for OPERATOR.valueof()
+		this.expression = (s + '\0').getBytes();
+
+		getToken();
+		if (operator == OPERATOR.END) {
+			throw new Exception("unexpected end of expression");
+		}
+		root = parse();
+		if (operator != OPERATOR.END) {
+			throw new Exception("end of expression expected");
+		}
+	}
+
+	static List<String> reservedWords = new ArrayList<String>();
+	static {
+		for (int i = OPERATOR.POW.ordinal(); i <= OPERATOR.SQRT.ordinal(); i++) {
+			reservedWords.add(OPERATOR.values()[i].toString());
 		}
 
-		s = e;
-		i = 0;
-		for (String a : v) {
-			q = "x" + i;
-			if (Pattern.compile(bregex(q)).matcher(e).find()) {
-				throw new Exception("unknown variable \"" + q+"\"");
-			}
-			s = s.replaceAll(bregex(a), q);
-			i++;
+		for (CONSTANT_NAME s : CONSTANT_NAME.values()) {
+			reservedWords.add(s.toString());
 		}
-
-		compile(s);
-		if (arguments > v.length) { //compile("x0+x1","x0")
-	    	for(String a:expression.split("\\W+")) {
-	    		if(Character.toLowerCase(a.charAt(0))=='x') {
-	    			//x123df
-	    	        Matcher matcher = Pattern.compile("\\d+").matcher(a.substring(1));
-	    	        if (matcher.find() && Integer.parseInt(matcher.group())>=v.length ) {
-						throw new Exception("unknown variable \"" + a+"\"");
-	    	        }	    			
-	    		}
-	    	}
-	    	
-			//should not happen
-	    	//System.out.println(Thread.currentThread().getStackTrace()[1]);
-			StackTraceElement stack = Thread.currentThread().getStackTrace()[1];
-			throw new Exception("unknown variable found " + stack.getClassName() + " " + stack.getMethodName() + ":"
-					+ stack.getLineNumber());
-		}
-		arguments = v.length;
-	}	
-
+	}
 };

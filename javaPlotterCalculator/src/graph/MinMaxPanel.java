@@ -29,12 +29,12 @@ public class MinMaxPanel extends JPanel {
 	static Color okColor = Color.black;
 	private GraphView view;
 	ElementaryGraphPanel el;
-	boolean ok[]=new boolean[2];
+	boolean ok[] = new boolean[2];
 
-	public MinMaxPanel(GraphPanel graph, String name,ElementaryGraphPanel el) {
+	public MinMaxPanel(GraphPanel graph, String name, ElementaryGraphPanel el) {
 		int i;
 		this.view = graph.view;
-		this.el=el;
+		this.el = el;
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		setBackground(graph.getBackgroundColor());
 
@@ -47,14 +47,14 @@ public class MinMaxPanel extends JPanel {
 			t[i].addKeyListener(new KeyL());
 		}
 
-		for (Component c : new Component[] { label, t[0], new JLabel("-"), t[1] }) {
+		for (Component c : new Component[] { label, t[0], new JLabel(" - "), t[1] }) {
 			add(c);
 		}
 
 	}
 
 	public void setName(String name) {
-		label.setText(name);
+		label.setText(name + " ");
 	}
 
 	public double getMin() {
@@ -66,7 +66,7 @@ public class MinMaxPanel extends JPanel {
 	}
 
 	public static String format(double v) {
-		String s=String.format(Locale.US, "%.8f", v);
+		String s = String.format(Locale.US, "%.8f", v);
 		s = s.indexOf(".") < 0 ? s : s.replaceAll("0*$", "").replaceAll("\\.$", "");
 		return s;
 	}
@@ -85,7 +85,7 @@ public class MinMaxPanel extends JPanel {
 
 		public void keyReleased(KeyEvent arg0) {
 			setValues(false, t[0].getText(), t[1].getText());
-			if(el!=null) {
+			if (el != null) {
 				el.recalculate();
 			}
 			view.redrawImage();
@@ -99,17 +99,16 @@ public class MinMaxPanel extends JPanel {
 	public void setValues(String... s) {
 		setValues(true, s[0], s[1]);
 	}
-	
+
 	public void setValues(boolean settext, String... s) {
 		int i;
 		double a;
 		for (i = 0; i < 2; i++) {
 			if (settext) {
-				try{
-					a=Double.parseDouble(s[i]);
+				try {
+					a = Double.parseDouble(s[i]);
 					t[i].setText(format(a));
-				}
-				catch(Exception e) {
+				} catch (Exception e) {
 					t[i].setText(s[i]);
 				}
 			}
@@ -129,12 +128,12 @@ public class MinMaxPanel extends JPanel {
 	boolean ok() {
 		return ok[0] && ok[1];
 	}
-	
+
 	static double parseValueSetColor(JTextField t) {
-		return parseValueSetColor(t,false);
+		return parseValueSetColor(t, false);
 	}
 
-	static double parseValueSetColor(JTextField t,boolean steps) {
+	static double parseValueSetColor(JTextField t, boolean steps) {
 		double v;
 		try {
 			v = ExpressionEstimator.calculate(t.getText());
@@ -149,5 +148,5 @@ public class MinMaxPanel extends JPanel {
 		t.setForeground(Double.isNaN(v) ? errorColor : okColor);
 		return v;
 	}
-	
+
 }

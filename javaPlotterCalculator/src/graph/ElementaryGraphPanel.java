@@ -34,11 +34,11 @@ public class ElementaryGraphPanel extends JPanel implements ActionListener {
 	private JPanel up[] = new JPanel[2];
 	private JTextField tf[] = new JTextField[3];
 	private GraphPanel graph;
-	private final static String startFunctionString[] = { "tan(x)","3*sin(3*a)", "3*cos(t)", "3*sin(t)" };
+	private final static String startFunctionString[] = { "tan(x)", "3*sin(3*a)", "3*cos(t)", "3*sin(t)" };
 	private boolean ok = true;
 	private ExpressionEstimator[] estimator = new ExpressionEstimator[2];
 	private int previousType;
-	final String GRAPH_PARAMETERS[] = {"0", "2*pi" , "5 * 1000"};//min,max,step
+	final String GRAPH_PARAMETERS[] = { "0", "2*pi", "5 * 1000" };// min,max,step
 	private int steps;
 	private static final String VARIABLE_NAME[] = { "x", "a", "t" };
 	private JButton button = new JButton();
@@ -51,8 +51,8 @@ public class ElementaryGraphPanel extends JPanel implements ActionListener {
 		int i;
 		JPanel p;
 
-		m_signals=true;
-		
+		m_signals = true;
+
 		this.graph = graph;
 		this.color = color;
 		setBackground(graph.getBackgroundColor());
@@ -62,10 +62,10 @@ public class ElementaryGraphPanel extends JPanel implements ActionListener {
 			tf[i].addKeyListener(new KeyL());
 		}
 
-		parameterMinMaxPanel = new MinMaxPanel(graph, null,this);
+		parameterMinMaxPanel = new MinMaxPanel(graph, null, this);
 		parameterMinMaxPanel.setValues(GRAPH_PARAMETERS);
 
-		button = new JButton(Helper.createImageIcon( "minus.png"));
+		button = new JButton(Helper.createImageIcon("minus.png"));
 		button.addActionListener(this);
 
 		type.addActionListener(this);
@@ -73,7 +73,7 @@ public class ElementaryGraphPanel extends JPanel implements ActionListener {
 
 		for (i = 0; i < label.length; i++) {
 			label[i] = new JLabel();
-			if(i<2) {
+			if (i < 2) {
 				label[i].setForeground(color);
 				estimator[i] = new ExpressionEstimator();
 				p = up[i] = new JPanel();
@@ -95,9 +95,9 @@ public class ElementaryGraphPanel extends JPanel implements ActionListener {
 		parameterPanel.add(label[3]);
 		parameterPanel.add(tf[2]);
 		parameterPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, tf[2].getPreferredSize().height));
-		
+
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-		for (JComponent _c : new JComponent[] {   up[0], up[1],label[2], type, parameterPanel,button }) {
+		for (JComponent _c : new JComponent[] { up[0], up[1], label[2], type, parameterPanel, button }) {
 			add(Box.createRigidArea(new Dimension(1, 0)));
 			add(_c);
 		}
@@ -108,7 +108,7 @@ public class ElementaryGraphPanel extends JPanel implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		if(!m_signals) {
+		if (!m_signals) {
 			return;
 		}
 		if (type == e.getSource()) {
@@ -122,7 +122,7 @@ public class ElementaryGraphPanel extends JPanel implements ActionListener {
 	}
 
 	private String getExtendedText(int type) {
-		return " " + typeLabelString[type] + "=";
+		return " " + typeLabelString[type] + " = ";
 	}
 
 	private void setGraphType(int type) {
@@ -133,7 +133,7 @@ public class ElementaryGraphPanel extends JPanel implements ActionListener {
 
 		if (isParametrical()) {
 			label[1].setText(getExtendedText(3));
-			tf[1].setText(startFunctionString[type+1]);
+			tf[1].setText(startFunctionString[type + 1]);
 		}
 
 		up[1].setVisible(isParametrical());
@@ -158,7 +158,7 @@ public class ElementaryGraphPanel extends JPanel implements ActionListener {
 		for (i = 0; i < (isParametrical() ? 2 : 1); i++) {
 			JTextField t = tf[i];
 			try {
-				estimator[i].compile(tf[i].getText(),VARIABLE_NAME[previousType]);
+				estimator[i].compile(tf[i].getText(), VARIABLE_NAME[previousType]);
 				t.setForeground(Color.black);
 			} catch (Exception e) {
 				ok = false;
@@ -166,13 +166,12 @@ public class ElementaryGraphPanel extends JPanel implements ActionListener {
 			}
 		}
 		if (!isStandard()) {
-			v=MinMaxPanel.parseValueSetColor(tf[2],true);
-			//v==Double.NaN is not working
-			if(Double.isNaN(v)) {
+			v = MinMaxPanel.parseValueSetColor(tf[2], true);
+			// v==Double.NaN is not working
+			if (Double.isNaN(v)) {
 				ok = false;
-			}
-			else {
-				steps=(int)v;
+			} else {
+				steps = (int) v;
 			}
 		}
 
@@ -231,23 +230,23 @@ public class ElementaryGraphPanel extends JPanel implements ActionListener {
 	}
 
 	public void changeLanguage() {
-		label[2].setText(graph.getLanguageString(GraphPanel.STRING_ENUM.TYPE));
-		label[3].setText(graph.getLanguageString(GraphPanel.STRING_ENUM.STEPS));	
+		label[2].setText(graph.getLanguageString(GraphPanel.STRING_ENUM.TYPE) + " ");
+		label[3].setText(graph.getLanguageString(GraphPanel.STRING_ENUM.STEPS) + " ");
 		refillCombo();
 	}
-	
+
 	private void refillCombo() {
-		m_signals=false;
-		int i=type.getSelectedIndex();
-		if(i==-1) {
-			i=0;
+		m_signals = false;
+		int i = type.getSelectedIndex();
+		if (i == -1) {
+			i = 0;
 		}
 		type.removeAllItems();
-		for(GraphPanel.STRING_ENUM e:GraphPanel.STRING_ENUM.TYPES) {
+		for (GraphPanel.STRING_ENUM e : GraphPanel.STRING_ENUM.TYPES) {
 			type.addItem(graph.getLanguageString(e));
 		}
 		type.setSelectedIndex(i);
-		m_signals=true;
-		
+		m_signals = true;
+
 	}
 }

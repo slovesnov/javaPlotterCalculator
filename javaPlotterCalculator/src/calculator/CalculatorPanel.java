@@ -38,7 +38,7 @@ import common.Language;
 import estimator.ExpressionEstimator;
 
 @SuppressWarnings("serial")
-public class CalculatorPanel extends JPanel implements ActionListener,Language {
+public class CalculatorPanel extends JPanel implements ActionListener, Language {
 
 	public enum CalculatorLanguage {
 		ENGLISH, RUSSIAN
@@ -50,7 +50,8 @@ public class CalculatorPanel extends JPanel implements ActionListener,Language {
 					"rounding and additional functions", "memory", "buffer", "error", "scientific calculator" },
 			{ "очистить", "пересчитать", "копировать в память", "добавить в буфер", "очистить буфер", "выражение",
 					"результат", "общие функции", "константы", "тригонометрические функции", "гиперболические функции",
-					"дополнительные функции и функции округления", "память", "буфер", "ошибка", "научный калькулятор" } };
+					"дополнительные функции и функции округления", "память", "буфер", "ошибка",
+					"научный калькулятор" } };
 
 	private static enum STRING_ENUM {
 		CLEAR, RECOUNT, COPY_TO_MEMORY, ADD_TO_BUFFER, CLEAR_BUFFER, EXPRESSION, RESULT, COMMON_FUNCTIONS, CONSTANTS,
@@ -65,7 +66,7 @@ public class CalculatorPanel extends JPanel implements ActionListener,Language {
 	};
 
 	private int language;
-	private String config="javaCalculator.cfg";
+	private String config = "javaCalculator.cfg";
 
 	private String getLanguageString(STRING_ENUM e) {
 		return languageString[language][e.ordinal()];
@@ -223,9 +224,9 @@ public class CalculatorPanel extends JPanel implements ActionListener,Language {
 		box.add(label[2]);
 		p3.add(box);
 		p3.add(createBox(textField[2]));
-		
+
 		p.add(p3);
-		i=4;
+		i = 4;
 		p2 = groupPanel[i];
 		for (JButton b : buttons[i]) {
 			p2.add(b);
@@ -409,12 +410,12 @@ public class CalculatorPanel extends JPanel implements ActionListener,Language {
 
 	public void changeLanguage(int language) {
 		this.language = language;
-	
+
 		JFrame f = (JFrame) SwingUtilities.windowForComponent(this);
-		if(f!=null) {
+		if (f != null) {
 			f.setTitle(getTitle());
 		}
-		
+
 		int i;
 		for (i = 0; i < STRING_ENUM.BUTTON.length; i++) {
 			bbutton[i].setText(getLanguageString(STRING_ENUM.BUTTON[i]));
@@ -477,7 +478,7 @@ public class CalculatorPanel extends JPanel implements ActionListener,Language {
 	}
 
 	public void saveConfig() {
-		Helper.saveLanguageToFile(config,language);	
+		Helper.saveLanguageToFile(config, language);
 	}
 
 }

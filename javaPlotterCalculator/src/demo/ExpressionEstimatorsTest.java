@@ -16,7 +16,15 @@ public class ExpressionEstimatorsTest {
 		return b ? "ok" : "error";
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
+		ExpressionEstimator e = new ExpressionEstimator();
+		e.compile("a+b", new String[] { "a", "b" });
+		System.out.println(e.calculate(1, 2));
+		System.out.println(e.calculate(new double[] { 1, 2 }));
+		ExpressionEstimator e1 = new ExpressionEstimator("a*b", new String[] { "a", "b" });
+		System.out.println(e1.calculate(1, 2));
+		System.out.println(e1.calculate(new double[] { 1, 2 }));
+
 		String[] expression = { "+1*2+3", "+(+2)", "-(-2)", "-max(+1,-2)", "ceil(5.6)", "ceil(-5.6)", "1+2*3",
 				"1*2*sin(+3)", "1*2+(", "1*2-(", "sin(pow(pi,e))", "sin(1+3*4))", "sin()", "sin(", "sin)", "+-2",
 				"2/+2", "+2", "1+-2" };
@@ -34,13 +42,14 @@ public class ExpressionEstimatorsTest {
 				try {
 					v[i] = (i == FAST ? ExpressionEstimator.calculate(s) : SlowExpressionEstimator.estimate(s));
 					ok[i] = true;
-				} catch (Exception e) {
+				} catch (Exception ex) {
 					// System.err.println(e.getMessage());
 					ok[i] = false;
 				}
 			}
 			if (ok[FAST] != ok[SLOW]) {
-				System.err.println(s + " FAST=" + fromBoolean(ok[FAST]) +" "+v[FAST]+ ", SLOW=" + fromBoolean(ok[SLOW])+" "+v[SLOW]);
+				System.err.println(s + " FAST=" + fromBoolean(ok[FAST]) + " " + v[FAST] + ", SLOW="
+						+ fromBoolean(ok[SLOW]) + " " + v[SLOW]);
 				error = true;
 				break;
 			} else if (ok[FAST] && ok[SLOW] && v[FAST] != v[SLOW]) {
@@ -52,6 +61,7 @@ public class ExpressionEstimatorsTest {
 		if (!error) {
 			System.out.println("the end");
 		}
+
 	}
 
 }

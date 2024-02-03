@@ -21,8 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
 @SuppressWarnings("serial")
-public
-class LanguageComboBox extends JPanel implements ActionListener {
+public class LanguageComboBox extends JPanel implements ActionListener {
 	private ImageIcon[] images;
 	private String[] languageName = { "en", "ru" };
 	private JComboBox<Integer> combo;
