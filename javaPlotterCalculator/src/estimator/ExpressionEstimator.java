@@ -27,7 +27,7 @@ public class ExpressionEstimator {
 		PLUS, MINUS, MULTIPLY, DIVIDE, LEFT_BRACKET, RIGHT_BRACKET, LEFT_SQUARE_BRACKET, RIGHT_SQUARE_BRACKET,
 		LEFT_CURLY_BRACKET, RIGHT_CURLY_BRACKET, COMMA, POW, ATAN2, MIN, MAX, SIN, COS, TAN, COT, SEC, CSC, ASIN, ACOS,
 		ATAN, ACOT, ASEC, ACSC, SINH, COSH, TANH, COTH, SECH, CSCH, ASINH, ACOSH, ATANH, ACOTH, ASECH, ACSCH, RANDOM,
-		CEIL, FLOOR, ROUND, ABS, EXP, LOG, SQRT, X, NUMBER, UNARY_MINUS, END
+		CEIL, FLOOR, ROUND, ABS, SIGN, EXP, LOG, SQRT, X, NUMBER, UNARY_MINUS, END
 	}
 
 	private enum CONSTANT_NAME {
@@ -178,6 +178,9 @@ public class ExpressionEstimator {
 
 			case ABS:
 				return Math.abs(l);
+
+			case SIGN:
+				return Math.signum(l);
 
 			case EXP:
 				return Math.exp(l);
