@@ -406,6 +406,14 @@ static_compile
 static_compile
 9
 
+"2**3+3**2"
+static_compile
+17
+
+"2^3+3^2"
+static_compile
+17
+
 "2 + 3 * * 2 + 8"
 static_compile
 19
