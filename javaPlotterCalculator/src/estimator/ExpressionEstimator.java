@@ -335,28 +335,28 @@ public class ExpressionEstimator {
 	}
 
 	private Node parse1() throws Exception {
-		Node node = parse2();
+		Node node;
+		if (operator == OPERATOR.MINUS) {
+			getToken();
+			node = new Node(OPERATOR.UNARY_MINUS, parse2());
+		} else {
+			if (operator == OPERATOR.PLUS) {
+				getToken();
+			}
+			node = parse2();
+		}
+		return node;
+	}
+	
+	private Node parse2() throws Exception {
+		Node node = parse3();
 		while (operator == OPERATOR.MULTIPLY || operator == OPERATOR.DIVIDE || operator == OPERATOR.POW) {
 			node = new Node(operator, node);
 			getToken();
 			if (operator == OPERATOR.PLUS || operator == OPERATOR.MINUS) {
 				throw new Exception("two operators in a row");
 			}
-			node.right = parse2();
-		}
-		return node;
-	}
-
-	private Node parse2() throws Exception {
-		Node node;
-		if (operator == OPERATOR.MINUS) {
-			getToken();
-			node = new Node(OPERATOR.UNARY_MINUS, parse3());
-		} else {
-			if (operator == OPERATOR.PLUS) {
-				getToken();
-			}
-			node = parse3();
+			node.right = parse3();
 		}
 		return node;
 	}
