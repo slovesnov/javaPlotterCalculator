@@ -321,47 +321,42 @@ public class ExpressionEstimator {
 
 	}
 
+	static final OPERATOR A[][] = { { OPERATOR.PLUS, OPERATOR.MINUS }, {}, { OPERATOR.MULTIPLY, OPERATOR.DIVIDE },
+			{ OPERATOR.POW, OPERATOR.POW } };
+
 	private Node parse() throws Exception {
-		Node node = parse1();
-		while (operator == OPERATOR.PLUS || operator == OPERATOR.MINUS) {
-			node = new Node(operator, node);
-			getToken();
-			if (operator == OPERATOR.PLUS || operator == OPERATOR.MINUS) {
-				throw new Exception("two operators in a row");
-			}
-			node.right = parse1();
-		}
-		return node;
+		return parse(0);
 	}
 
-	private Node parse1() throws Exception {
+	private Node parse(int n) throws Exception {
 		Node node;
-		if (operator == OPERATOR.MINUS) {
-			getToken();
-			node = new Node(OPERATOR.UNARY_MINUS, parse2());
-		} else {
-			if (operator == OPERATOR.PLUS) {
+		if (n == 1) {
+			if (operator == OPERATOR.MINUS) {
 				getToken();
+				return new Node(OPERATOR.UNARY_MINUS, parse(n + 1));
+			} else {
+				if (operator == OPERATOR.PLUS) {
+					getToken();
+				}
+				return parse(n + 1);
 			}
-			node = parse2();
 		}
-		return node;
-	}
-	
-	private Node parse2() throws Exception {
-		Node node = parse3();
-		while (operator == OPERATOR.MULTIPLY || operator == OPERATOR.DIVIDE || operator == OPERATOR.POW) {
+		if (n == 4) {
+			return parse4();
+		}
+		node = parse(n + 1);
+		while (Arrays.asList(A[n]).contains(operator)) {
 			node = new Node(operator, node);
 			getToken();
-			if (operator == OPERATOR.PLUS || operator == OPERATOR.MINUS) {
+			if (Arrays.asList(A[n]).contains(operator)) {// here A[0]
 				throw new Exception("two operators in a row");
 			}
-			node.right = parse3();
+			node.right = parse(n + 1);
 		}
 		return node;
 	}
 
-	private Node parse3() throws Exception {
+	private Node parse4() throws Exception {
 		Node node;
 		OPERATOR open;
 		int arguments;
@@ -416,9 +411,7 @@ public class ExpressionEstimator {
 	}
 
 	private void checkBracketBalance(OPERATOR open) throws Exception {
-		if (open == OPERATOR.LEFT_BRACKET && operator != OPERATOR.RIGHT_BRACKET
-				|| open == OPERATOR.LEFT_SQUARE_BRACKET && operator != OPERATOR.RIGHT_SQUARE_BRACKET
-				|| open == OPERATOR.LEFT_CURLY_BRACKET && operator != OPERATOR.RIGHT_CURLY_BRACKET) {
+		if (operator.ordinal() != open.ordinal() + 1) {
 			throw new Exception("close bracket expected or another type of close bracket");
 		}
 	}
