@@ -322,7 +322,7 @@ public class ExpressionEstimator {
 	}
 
 	static final OPERATOR A[][] = { { OPERATOR.PLUS, OPERATOR.MINUS }, {}, { OPERATOR.MULTIPLY, OPERATOR.DIVIDE },
-			{ OPERATOR.POW, OPERATOR.POW } };
+			{ OPERATOR.POW } };
 
 	private Node parse() throws Exception {
 		return parse(0);
