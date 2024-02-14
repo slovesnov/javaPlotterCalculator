@@ -348,7 +348,7 @@ public class ExpressionEstimator {
 		while (Arrays.asList(A[n]).contains(operator)) {
 			node = new Node(operator, node);
 			getToken();
-			if (Arrays.asList(A[n]).contains(operator)) {// here A[0]
+			if (Arrays.asList(A[0]).contains(operator)) {// here A[0]
 				throw new Exception("two operators in a row");
 			}
 			node.right = parse(n + 1);
