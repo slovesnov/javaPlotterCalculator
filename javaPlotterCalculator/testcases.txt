@@ -86,6 +86,26 @@ static_compile
 static_compile
 10
 
+"2.e+1"
+static_compile
+20
+
+"2.e-1"
+static_compile
+.2
+
+"2.e+0"
+static_compile
+2
+
+"3.e-0"
+static_compile
+3
+
+"3.1e0"
+static_compile
+3.1
+
 "x0"
 static_compile
 compile_error
