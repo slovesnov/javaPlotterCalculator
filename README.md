@@ -2,4 +2,4 @@ Expression parser of strings like *sin(pi/4)*. It is also possible to create fun
 
 [more information](https://slovesnov.users.sourceforge.net/?parser,english)
 
-Parser available in c++, javascript, java and php.
+Parser available in c++, javascript, java and php languages.
