@@ -26,6 +26,10 @@ compile_error
 static_compile
 1.0625
 
+"0x1h"
+static_compile
+compile_error
+
 "0b"
 static_compile
 compile_error
@@ -65,6 +69,10 @@ static_compile
 "0b.11"
 static_compile
 .75
+
+"0b02"
+static_compile
+compile_error
 
 "0o17"
 static_compile
@@ -766,30 +774,26 @@ compile_error
 static_compile
 16
 
-"1++2"
+"1ee"
 static_compile
 compile_error
 
-"1+-2"
+"1e."
 static_compile
 compile_error
 
-"1-+2"
+"1e+2."
 static_compile
 compile_error
 
-"1--2"
+"1E2.5"
 static_compile
 compile_error
 
-"x0b*2" "" "1"
-compile_calculate
+"."
+static_compile
 compile_error
 
-"x*2" "" "1"
-compile_calculate
-compile_error
-
-"x1e0*2" "" "1"
-compile_calculate
+".1."
+static_compile
 compile_error

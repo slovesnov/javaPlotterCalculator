@@ -308,11 +308,14 @@ public class ExpressionEstimator {
 				}
 
 			} else {
-				for (i = position++; isDigitOrPoint() || expression[position] == 'E'
-						|| expression[position - 1] == 'E' && "+-".indexOf(expression[position]) != -1; position++)
-					;
-
-				tokenValue = Double.parseDouble(new String(expression, i, position - i));
+				s = new String(expression, position, expression.length - position);
+				Matcher matcher = Pattern.compile("^(\\d+\\.?\\d*|\\.\\d+)(E[+-]?\\d+)?").matcher(s);
+				if (!matcher.find()) {
+					throw new Exception("invalid number");
+				}
+				s = matcher.group();
+				tokenValue = Double.parseDouble(s);
+				position += s.length();
 			}
 			operator = OPERATOR.NUMBER;
 		} else {

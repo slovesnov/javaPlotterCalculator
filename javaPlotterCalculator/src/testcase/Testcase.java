@@ -2,11 +2,10 @@ package testcase;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.IOException;
 
 public class Testcase {
 	
-	public static void main(String[] args) throws IOException, Exception {
+	public static void main(String[] args) throws Exception {
 		String fn = "testcases.txt";//
 		BufferedReader br = new BufferedReader(new FileReader(fn));
 		String s;

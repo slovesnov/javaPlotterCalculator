@@ -18,7 +18,6 @@ public class Example1 {
 		try {
 			for (String e : a) {
 				System.out.println(ExpressionEstimator.calculate(e));
-
 			}
 		} catch (Exception ex) {
 			System.out.println(ex.getMessage());
